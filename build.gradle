@@ -19,6 +19,20 @@ allprojects {
     }
 }
 
+ext {
+    appCompatVersion = '1.2.0'
+    constraintLayoutVersion = '2.0.2'
+    coreTestingVersion = '2.1.0'
+    lifecycleVersion = '2.2.0'
+    roomVersion = '2.2.6'
+    materialVersion = '1.2.1'
+    navVersion = '2.3.2'
+    retrofitVersion = '2.9.0'
+    picassoVersion = '2.71828'
+
+    apiKeyGoogle = 'YOUR_API_KEY'
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

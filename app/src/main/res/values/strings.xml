@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Tilas</string>
+    <string name="photo_container">Photo container</string>
+    <string name="caption">Caption</string>
+    <string name="timestamp">Timestamp</string>
+    <string name="home">Home</string>
+    <string name="map">Map</string>
 </resources>
