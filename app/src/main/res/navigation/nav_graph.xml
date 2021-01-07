@@ -15,4 +15,11 @@
             android:name="com.napak.tilas.MapsFragment"
             android:label="fragment_maps"
             tools:layout="@layout/fragment_maps"/>
+
+    <fragment
+            android:id="@+id/tambahFragment"
+            android:name="com.napak.tilas.TambahFragment"
+            android:label="fragment_tambah"
+            tools:layout="@layout/fragment_tambah"/>
+
 </navigation>

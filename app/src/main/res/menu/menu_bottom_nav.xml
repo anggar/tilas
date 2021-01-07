@@ -10,5 +10,9 @@
             android:id="@+id/mapsFragment"
             android:icon="@drawable/ic_map"
             android:title="@string/map" />
+    <item
+            android:id="@+id/tambahFragment"
+            android:icon="@drawable/ic_input"
+            android:title="Tambah" />
 
 </menu>
