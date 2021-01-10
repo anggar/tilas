@@ -13,6 +13,7 @@ import com.napak.tilas.model.Photo;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import com.squareup.picasso.Picasso;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,9 +29,8 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
-
         binding = ActivityDetailBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         api = ApiClient.getClient().create(ApiInterface.class);
 
@@ -55,6 +55,7 @@ public class DetailActivity extends AppCompatActivity {
                 binding.detailTitle.setText(photo.getTitle());
                 binding.detailCaption.setText(photo.getCaption());
                 binding.detailDate.setText(format.format(photo.getCreated_at()));
+                Picasso.get().load(ApiClient.baseUrl + photo.getPhoto_url()).into(binding.detailImage);
             }
 
             @Override

@@ -35,6 +35,7 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
             googleMap.addMarker(new MarkerOptions().position(marker.getLatLng()));
         }
 
+        googleMap.setOnMarkerClickListener(this);
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(markers.get(0).getLatLng()));
     };
 

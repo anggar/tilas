@@ -5,6 +5,9 @@ import com.squareup.moshi.Json;
 import java.util.Date;
 
 public class PhotoListItem {
+    @Json(name="id")
+    int id;
+
     @Json(name="caption")
     String caption;
 
@@ -16,6 +19,10 @@ public class PhotoListItem {
 
     @Json(name="photo_url")
     String photo_url;
+
+    public int getId() {
+        return id;
+    }
 
     public String getCaption() {
         return caption;

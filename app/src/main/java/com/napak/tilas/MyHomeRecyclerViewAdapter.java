@@ -1,5 +1,6 @@
 package com.napak.tilas;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -70,6 +71,11 @@ public class MyHomeRecyclerViewAdapter extends RecyclerView.Adapter<MyHomeRecycl
             Picasso.get().load(Uri.parse(url)).into(binding.ivPhoto);
             binding.tvCaption.setText(item.getTitle());
             binding.tvTimestamp.setText(format.format(item.getCreated_at()));
+            binding.ivPhoto.setOnClickListener(view -> {
+                Intent intent = new Intent(binding.getRoot().getContext(), DetailActivity.class);
+                intent.putExtra("id", item.getId());
+                binding.getRoot().getContext().startActivity(intent);
+            });
         }
 
         @NonNull
