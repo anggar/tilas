@@ -22,5 +22,5 @@ public interface ApiInterface {
     Call<LumenResponse<PhotoListItem>> listPhotos();
 
     @GET("photo/{id}")
-    Call<List<Photo>> listDetailPhoto(@Path("id") int id);
+    Call<Photo> listDetailPhoto(@Path("id") int id);
 }
