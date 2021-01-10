@@ -1,26 +1,26 @@
 package com.napak.tilas.api;
 
-import com.napak.tilas.model.LumenResponse;
-import com.napak.tilas.model.Photo;
-import com.napak.tilas.model.PhotoListItem;
-import com.napak.tilas.model.PhotoMap;
+import com.napak.tilas.model.*;
 
-import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ApiInterface {
 
-    @GET("/photos/map")
+    @GET("photos/map")
     Call<List<PhotoMap>> listPhotoMap();
 
-    @POST("/photo")
+    @Multipart
+    @POST("photo")
+    Call<StatusMessage> uploadPhoto(@PartMap Map<String, RequestBody> params);
 
-    @GET("/photos")
+    @GET("photos")
     Call<List<PhotoListItem>> listPhotos();
 
-    @GET("/photo/{id}")
+    @GET("photo/{id}")
     Call<List<Photo>> listDetailPhoto();
 }

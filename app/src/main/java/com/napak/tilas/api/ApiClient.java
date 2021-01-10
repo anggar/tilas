@@ -8,7 +8,7 @@ public class ApiClient {
     public static Retrofit getClient() {
 
         return new Retrofit.Builder()
-                .baseUrl("http://192.168.42.60:8000/api")
+                .baseUrl("http://192.168.42.60:8000/api/")
                 .addConverterFactory(MoshiConverterFactory.create())
                 .build();
     }
