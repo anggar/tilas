@@ -8,6 +8,7 @@
     tools:context=".StartActivity">
 
     <Button
+        android:id="@+id/mulai"
         android:layout_width="110dp"
         android:layout_height="57dp"
         android:layout_marginLeft="38dp"
