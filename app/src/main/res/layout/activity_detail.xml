@@ -77,20 +77,29 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/colorPrimary"
             android:textColor="#FFF"
+            android:background="@drawable/round_corner"
             android:layout_margin="20dp"
             android:layout_marginBottom="50dp"
             android:layout_weight="1"
             android:text="SHOW LOCATION"/>
 
-        <Button
-            android:layout_width="match_parent"
+<!--        <Button-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="20dp"-->
+<!--            android:layout_marginBottom="50dp"-->
+<!--            android:layout_weight="2"-->
+<!--            android:drawableLeft="@drawable/trash" />-->
+
+        <ImageButton
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="#F00"
-            android:textColor="#FFF"
-            android:layout_margin="20dp"
-            android:layout_marginBottom="50dp"
-            android:layout_weight="2"
-            android:text="DELETE"/>
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:backgroundTint="#FFF"
+            android:src="@drawable/trash" />
+
+
     </LinearLayout>
 
 
