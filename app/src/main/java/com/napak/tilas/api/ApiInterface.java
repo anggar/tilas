@@ -22,5 +22,5 @@ public interface ApiInterface {
     Call<List<PhotoListItem>> listPhotos();
 
     @GET("/photo/{id}")
-    Call<List<Photo>> listPhoto();
+    Call<List<Photo>> listDetailPhoto();
 }
