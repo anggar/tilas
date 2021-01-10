@@ -34,4 +34,8 @@ public class LumenResponse<T> {
     @Json(name="to")
     private String to;
 
+
+    public List<T> getData() {
+        return data;
+    }
 }

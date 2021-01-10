@@ -1,25 +1,30 @@
 package com.napak.tilas;
 
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.napak.tilas.api.ApiClient;
 import com.napak.tilas.databinding.FragmentPhotoBinding;
 import com.napak.tilas.dummy.DummyContent.DummyItem;
+import com.napak.tilas.model.PhotoListItem;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link DummyItem}.
  */
 public class MyHomeRecyclerViewAdapter extends RecyclerView.Adapter<MyHomeRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> values;
+    private final List<PhotoListItem> values;
     private FragmentPhotoBinding binding;
 
-    public MyHomeRecyclerViewAdapter(List<DummyItem> items) {
+    public MyHomeRecyclerViewAdapter(List<PhotoListItem> items) {
         values = items;
     }
 
@@ -49,7 +54,7 @@ public class MyHomeRecyclerViewAdapter extends RecyclerView.Adapter<MyHomeRecycl
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public DummyItem item;
+        public PhotoListItem item;
         private final FragmentPhotoBinding binding;
 
         public ViewHolder(FragmentPhotoBinding binding) {
@@ -58,9 +63,13 @@ public class MyHomeRecyclerViewAdapter extends RecyclerView.Adapter<MyHomeRecycl
         }
 
         public void bind() {
-            Picasso.get().load(Uri.parse(item.photoUrl)).into(binding.ivPhoto);
-            binding.tvCaption.setText(item.caption);
-            binding.tvTimestamp.setText(item.details);
+            String url = ApiClient.baseUrl + item.getPhoto_url();
+            SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy hh:mm", Locale.getDefault());
+
+
+            Picasso.get().load(Uri.parse(url)).into(binding.ivPhoto);
+            binding.tvCaption.setText(item.getTitle());
+            binding.tvTimestamp.setText(format.format(item.getCreated_at()));
         }
 
         @NonNull

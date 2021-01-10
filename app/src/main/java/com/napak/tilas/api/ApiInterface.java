@@ -19,7 +19,7 @@ public interface ApiInterface {
     Call<StatusMessage> uploadPhoto(@PartMap Map<String, RequestBody> params);
 
     @GET("photos")
-    Call<List<PhotoListItem>> listPhotos();
+    Call<LumenResponse<PhotoListItem>> listPhotos();
 
     @GET("photo/{id}")
     Call<List<Photo>> listDetailPhoto();
