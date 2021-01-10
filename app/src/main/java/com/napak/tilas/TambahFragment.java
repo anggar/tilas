@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,6 +16,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 
 import android.provider.MediaStore;
@@ -23,6 +26,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.exifinterface.media.ExifInterface;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -62,6 +67,7 @@ public class TambahFragment extends Fragment implements SensorEventListener {
     private double locLat;
     private double locLng;
     private String user_id;
+    private String currentPhotoPath;
 
     private static final int LAUNCH_CAMERA = 558;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 112;
@@ -100,6 +106,35 @@ public class TambahFragment extends Fragment implements SensorEventListener {
         public void onLocationChanged(@NonNull Location location) {
             locLat = location.getLatitude();
             locLng = location.getLongitude();
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        File image = new File(getContext().getCacheDir(), (new Date()).toString() + ".jpg");
+        currentPhotoPath = image.getAbsolutePath();
+        picFile = image;
+        return image;
+    }
+
+    private void takePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                        "com.example.android.fileprovider",
+                        photoFile);
+
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, LAUNCH_CAMERA);
+            }
         }
     }
 
@@ -161,8 +196,9 @@ public class TambahFragment extends Fragment implements SensorEventListener {
         startLocationRequest();
 
         binding.addPicture.setOnClickListener(view1 -> {
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(intent, LAUNCH_CAMERA);
+//            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//            startActivityForResult(intent, LAUNCH_CAMERA);
+            takePictureIntent();
         });
 
         binding.upload.setOnClickListener(view1 -> {
@@ -209,29 +245,82 @@ public class TambahFragment extends Fragment implements SensorEventListener {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    public static Bitmap rotateImage(Bitmap src, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(src, 0, 0,
+                src.getWidth(), src.getHeight(), matrix, true);
+    }
+
+    private Bitmap processBitmap(Bitmap bmp) throws IOException {
+        ExifInterface ei = new ExifInterface(currentPhotoPath);
+        Bitmap resbmp = null;
+
+        int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_UNDEFINED);
+
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                resbmp = rotateImage(bmp, 90f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                resbmp = rotateImage(bmp, 180f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                resbmp = rotateImage(bmp, 270f);
+                break;
+
+            default:
+                resbmp = bmp;
+
+        }
+        return resbmp;
+    }
+
+    private void processCameraResult(Intent data) throws IOException
+    {
+        Bitmap bmp, rotatedBmp = null;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 2;
+
+        bmp = BitmapFactory.decodeFile(currentPhotoPath, options);
+        bmp = processBitmap(bmp);
+        binding.imageView.setImageBitmap(bmp);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        picFile = new File(getContext().getCacheDir(), (new Date()).toString() + ".jpg");
-        FileOutputStream fos = null;
-
-        try {
-            picFile.createNewFile();
-            picFile.setWritable(true);
-            fos = new FileOutputStream(picFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Bitmap bitmap;
-        if ((requestCode == LAUNCH_CAMERA) && (resultCode == Activity.RESULT_OK)) {
-            if (data != null) {
-                bitmap = (Bitmap) data.getExtras().get("data");
-                binding.imageView.setImageBitmap(bitmap);
-
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
-                sensorTriggerOnPhotoCaptured();
+//        picFile = new File(getContext().getCacheDir(), (new Date()).toString() + ".jpg");
+//        FileOutputStream fos = null;
+//
+//        try {
+//            picFile.createNewFile();
+//            picFile.setWritable(true);
+//            fos = new FileOutputStream(picFile);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        Bitmap bitmap;
+//        if ((requestCode == LAUNCH_CAMERA) && (resultCode == Activity.RESULT_OK)) {
+//            if (data != null) {
+//                bitmap = (Bitmap) data.getExtras().get("data");
+//                binding.imageView.setImageBitmap(bitmap);
+//
+//                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+//                sensorTriggerOnPhotoCaptured();
+//            }
+//        }
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == LAUNCH_CAMERA) {
+                try {
+                    processCameraResult(data);
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
