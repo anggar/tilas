@@ -59,6 +59,8 @@ public class TambahFragment extends Fragment implements SensorEventListener {
 
     private ApiInterface api;
     private float luminance;
+    private double locLat;
+    private double locLng;
     private String user_id;
 
     private static final int LAUNCH_CAMERA = 558;
@@ -89,12 +91,15 @@ public class TambahFragment extends Fragment implements SensorEventListener {
         return RequestBody.create(MediaType.parse("multipart/form-data"), Float.valueOf(value).toString());
     }
 
+    private static RequestBody toRequestBody (double value) {
+        return RequestBody.create(MediaType.parse("multipart/form-data"), Double.valueOf(value).toString());
+    }
+
     private class MyLocationListener implements LocationListener {
         @Override
         public void onLocationChanged(@NonNull Location location) {
-            // TODO process lat and lng here
-            double lat = location.getLatitude();
-            double lng = location.getLongitude();
+            locLat = location.getLatitude();
+            locLng = location.getLongitude();
         }
     }
 
@@ -164,8 +169,8 @@ public class TambahFragment extends Fragment implements SensorEventListener {
             Map<String, RequestBody> map = new HashMap<>();
             map.put("title", toRequestBody(binding.inputTitle.getText().toString()));
             map.put("caption", toRequestBody(binding.inputCaption.getText().toString()));
-            map.put("lat", toRequestBody(-7.21f)); // TODO: GPS
-            map.put("lng", toRequestBody(121.21f));
+            map.put("lat", toRequestBody(locLat));
+            map.put("lng", toRequestBody(locLng));
             map.put("user_id", toRequestBody(user_id));
             map.put("luminance", toRequestBody(luminance));
 
@@ -232,7 +237,8 @@ public class TambahFragment extends Fragment implements SensorEventListener {
     }
 
     private void sensorTriggerOnPhotoCaptured() {
-        binding.simpleSeekBar.setProgress(100 - ((int) (luminance/16.0) * 100));
+        float capturedLuminance = luminance;
+        binding.simpleSeekBar.setProgress(100 - ((int) (capturedLuminance/16.0) * 100));
     }
 
     @Override
