@@ -24,7 +24,7 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginBottom="10dp"
-                android:background="#F2F2F2"
+                android:background="#FAEADF"
                 android:hint="Title"
                 android:padding="10dp"
                 android:focusableInTouchMode="true"
@@ -41,7 +41,7 @@
                 android:minLines="6"
                 android:scrollbars="vertical"
                 android:layout_margin="20dp"
-                android:background="#F2F2F2"
+                android:background="#FAEADF"
                 android:inputType="text|textMultiLine"
                 android:hint="Caption"
                 android:padding="10dp" />
