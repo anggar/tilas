@@ -1,14 +1,19 @@
 package com.napak.tilas;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 
 import android.provider.MediaStore;
@@ -16,6 +21,8 @@ import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -55,6 +62,11 @@ public class TambahFragment extends Fragment implements SensorEventListener {
     private String user_id;
 
     private static final int LAUNCH_CAMERA = 558;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 112;
+
+    private boolean locationPermissionGranted;
+    private LocationManager locationManager;
+    private MyLocationListener locationListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,10 +89,46 @@ public class TambahFragment extends Fragment implements SensorEventListener {
         return RequestBody.create(MediaType.parse("multipart/form-data"), Float.valueOf(value).toString());
     }
 
+    private class MyLocationListener implements LocationListener {
+        @Override
+        public void onLocationChanged(@NonNull Location location) {
+            // TODO process lat and lng here
+            double lat = location.getLatitude();
+            double lng = location.getLongitude();
+        }
+    }
+
+    private void getLocationPermission() {
+        if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationPermissionGranted = true;
+        }
+        else {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    private void startLocationRequest() {
+        if (!locationPermissionGranted) {
+            getLocationPermission();
+        }
+
+        if (ActivityCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                3000, 2, locationListener);
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // request location permissions
+        getLocationPermission();
 
         sharedPref = getContext().getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
 
@@ -96,13 +144,16 @@ public class TambahFragment extends Fragment implements SensorEventListener {
             user_id = sharedPref.getString("USER_ID", "BACKUP");
         }
 
-
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT) != null) {
             lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         } else {
             luminance = -1.0f;
         }
+
+        locationListener = new MyLocationListener();
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        startLocationRequest();
 
         binding.addPicture.setOnClickListener(view1 -> {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -137,6 +188,20 @@ public class TambahFragment extends Fragment implements SensorEventListener {
                 }
             });
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults)
+    {
+        locationPermissionGranted = false;
+        if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                locationPermissionGranted = true;
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -180,6 +245,7 @@ public class TambahFragment extends Fragment implements SensorEventListener {
     public void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
+        locationManager.removeUpdates(locationListener);
     }
 
     @Override
