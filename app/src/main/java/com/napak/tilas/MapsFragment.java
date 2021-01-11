@@ -30,7 +30,9 @@ public class MapsFragment extends Fragment implements GoogleMap.OnMarkerClickLis
     private List<PhotoMap> markers;
     private ApiInterface api;
 
-    private OnMapReadyCallback callback = googleMap -> {
+    private final OnMapReadyCallback callback = googleMap -> {
+        if (markers == null) return;;
+
         for(PhotoMap marker: markers) {
             googleMap.addMarker(new MarkerOptions().position(marker.getLatLng()));
         }
