@@ -21,6 +21,7 @@ import android.os.Bundle;
 
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -201,6 +202,9 @@ public class TambahFragment extends Fragment implements SensorEventListener {
             takePictureIntent();
         });
 
+        binding.simpleSeekBar.setMax(17);
+        binding.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
         binding.upload.setOnClickListener(view1 -> {
             Map<String, RequestBody> map = new HashMap<>();
             map.put("title", toRequestBody(binding.inputTitle.getText().toString()));
@@ -317,6 +321,7 @@ public class TambahFragment extends Fragment implements SensorEventListener {
             if (requestCode == LAUNCH_CAMERA) {
                 try {
                     processCameraResult(data);
+                    sensorTriggerOnPhotoCaptured();
                 }
                 catch (IOException e) {
                     e.printStackTrace();
@@ -327,7 +332,7 @@ public class TambahFragment extends Fragment implements SensorEventListener {
 
     private void sensorTriggerOnPhotoCaptured() {
         float capturedLuminance = luminance;
-        binding.simpleSeekBar.setProgress(100 - ((int) (capturedLuminance/16.0) * 100));
+        binding.simpleSeekBar.setProgress((int) capturedLuminance);
     }
 
     @Override
