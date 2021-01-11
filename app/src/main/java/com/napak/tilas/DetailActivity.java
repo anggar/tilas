@@ -1,5 +1,6 @@
 package com.napak.tilas;
 
+import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -25,6 +26,7 @@ public class DetailActivity extends AppCompatActivity {
     private ActivityDetailBinding binding;
     private int photo_id;
     private ApiInterface api;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,14 @@ public class DetailActivity extends AppCompatActivity {
                 binding.detailCaption.setText(photo.getCaption());
                 binding.detailDate.setText(format.format(photo.getCreated_at()));
                 Picasso.get().load(ApiClient.baseUrl + photo.getPhoto_url()).into(binding.detailImage);
+
+                intent = new Intent(getApplicationContext(), MapsActivity.class);
+                intent.putExtra("LAT", photo.getLat());
+                intent.putExtra("LNG", photo.getLng());
+
+                binding.btnLoc.setOnClickListener(view -> {
+                    startActivity(intent);
+                });
             }
 
             @Override
